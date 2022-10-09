@@ -219,7 +219,7 @@ int sedanCarSelection() {
     cout << "1) Maruti Ciaz Alpha" << endl;
     cout << "2) Maruti Ciaz Sigma" << endl;
     cout << "3) Honda City V MT" << endl;
-    cout << "4) Honda City V MT" << endl;
+    cout << "4) Hyundai Verna SX" << endl;
     cin >> carChoice;
     cout << endl;
 
