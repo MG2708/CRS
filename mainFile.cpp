@@ -2,7 +2,14 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <climits>
 #include <cstdlib>
+
+/*
+ * Below header file has been included only for case conversions on strings.
+ */
+
+#include <algorithm>
 
 /*
  * Below headers are only added for delay.
@@ -26,6 +33,8 @@ using std::endl;
 using std::string;
 using std::vector;
 using std::fstream;
+
+#define TOTAL_CARS 4
 
 
 // Base class
@@ -75,6 +84,8 @@ public:
     void displayInfoLux();
     double giveCost(int days);
     string giveName();
+    double givePrice();
+    double giveMileage();
 };
 
 void Luxury :: displayInfoLux() {
@@ -108,6 +119,14 @@ double Luxury :: giveCost(int days)
 string Luxury :: giveName() {
     return modelName;
 }
+double Luxury :: givePrice()
+{
+    return price;
+}
+double Luxury :: giveMileage()
+{
+    return mileage;
+}
 
 class Suv : protected DatabaseCar {
     double groundClearance;
@@ -132,6 +151,8 @@ public:
     void displayInfoSuv();
     double giveCost(int days);
     string giveName();
+    double givePrice();
+    double giveMileage();
 };
 
 void Suv :: displayInfoSuv() {
@@ -158,6 +179,14 @@ double Suv :: giveCost(int days)
 string Suv :: giveName() {
     return modelName;
 }
+double Suv :: givePrice()
+{
+    return price;
+}
+double Suv :: giveMileage()
+{
+    return mileage;
+}
 
 class Sedan : protected DatabaseCar
 {
@@ -179,6 +208,8 @@ public:
     void displayInfoSedan(); 
     double giveCost(int days);
     string giveName();
+    double givePrice();
+    double giveMileage();
 }; 
 
 void Sedan :: displayInfoSedan()
@@ -201,6 +232,142 @@ double Sedan :: giveCost(int days)
 }
 string Sedan :: giveName() {
     return modelName;
+}
+double Sedan :: givePrice() {
+    return price;
+}
+double Sedan :: giveMileage() {
+    return mileage;
+}
+
+void mergeAsc(double* arr, int l, int r, int mid)
+{
+    /*  
+    Here we will assume we have two arrays,
+    one from l to mid, the other from
+    mid + 1 to r
+    */
+
+    // We will take starting index of main array to be 0
+    // Consider that. 
+
+    int l_size = mid - l + 1; // Take an array and try it out
+    int r_size = r - mid; // r_size = r - (mid+1) + 1
+
+    double L[l_size + 1]; // Our left array. Also, why +1? For line 37
+    double R[r_size + 1]; // Our right array. Also, why +1? For line 37
+
+    // Now we will put l to mid elements into L
+    // and mid+1 to r elements into R
+    for (int i = 0; i < l_size; i++)
+    {
+        L[i] = arr[i + l]; // a[l] is first element in left array
+                         // assign it to L[0] and so on.
+    }
+    for (int i = 0; i < r_size; i++)
+    {
+        R[i] = arr[i + mid + 1]; // a[mid + 1] is first element in left array
+                               // assign it to R[0] and so on.
+    }
+
+    L[l_size] = R[r_size] = INT_MAX; // https://youtu.be/cWvruDR-hJA?list=PLauivoElc3ggagradg8MfOZreCMmXMmJ-&t=1078
+
+    int l_i = 0;
+    int r_i = 0;
+
+    for (int i = l; i <= r; i++)
+    {
+        if (L[l_i] <= R[r_i])
+        {
+            arr[i] = L[l_i];
+            l_i++;
+        }
+        else
+        {
+            arr[i] = R[r_i];
+            r_i++;
+        }
+    }
+}
+
+void mergeSortAsc(double* arr, int l, int r)
+{
+    if (l == r) 
+        return;
+
+    int mid = (l+r)/2;
+    mergeSortAsc(arr, l, mid);
+    mergeSortAsc(arr, mid+1, r);
+    mergeAsc(arr, l, r, mid);
+}
+
+void mergeDesc(double* arr, int l, int r, int mid)
+{
+    /*  
+    Here we will assume we have two arrays,
+    one from l to mid, the other from
+    mid + 1 to r
+    */
+
+    // We will take starting index of main array to be 0
+    // Consider that. 
+
+    int l_size = mid - l + 1; // Take an array and try it out
+    int r_size = r - mid; // r_size = r - (mid+1) + 1
+
+    double L[l_size + 1]; // Our left array. Also, why +1? For line 37
+    double R[r_size + 1]; // Our right array. Also, why +1? For line 37
+
+    // Now we will put l to mid elements into L
+    // and mid+1 to r elements into R
+    for (int i = 0; i < l_size; i++)
+    {
+        L[i] = arr[i + l]; // a[l] is first element in left array
+                         // assign it to L[0] and so on.
+    }
+    for (int i = 0; i < r_size; i++)
+    {
+        R[i] = arr[i + mid + 1]; // a[mid + 1] is first element in left array
+                               // assign it to R[0] and so on.
+    }
+
+    L[l_size] = R[r_size] = INT_MAX; // https://youtu.be/cWvruDR-hJA?list=PLauivoElc3ggagradg8MfOZreCMmXMmJ-&t=1078
+
+    int L_i=0; int R_j =0; int k=l;
+    while (L_i < l_size && R_j < r_size) {
+        if (L[L_i] >= R[R_j]) {
+            arr[k] = L[L_i];
+            L_i++;
+        }
+        else {
+            arr[k] = R[R_j];
+            R_j++;
+        }
+        k++;
+    }
+    //checking and adding if any elements left for second subarray
+    while (R_j < r_size) {
+        arr[k] = R[R_j];
+        R_j++;
+        k++;
+    }
+    //checking and adding if any elements left for first subarray
+    while (L_i < l_size) {
+        arr[k] = L[L_i];
+        L_i++;
+        k++;
+    }
+}
+
+void mergeSortDesc(double* arr, int l, int r)
+{
+    if (l == r) 
+        return;
+
+    int mid = l + (r - l) / 2;
+    mergeSortDesc(arr, l, mid);
+    mergeSortDesc(arr, mid+1, r);
+    mergeDesc(arr, l, mid, r);
 }
 
 int welcomeMenu()
@@ -225,77 +392,284 @@ int welcomeMenu()
 
 }
 
-// Function to display variety of luxury cars to the user and return
-// the car which the user chooses.
-int luxCarSelection() {
-    int carChoice{};
-
-    cout << "Choose which car you would like to ride in" << endl;
-    cout << "1) BMW X1" << endl;
-    cout << "2) Mercedes E-Class E 220d BS4" << endl;
-    cout << "3) Mercedes S-Class 5500 W223 BS4" << endl;
-    cout << "4) Audi A8L Technology Model" << endl;
-    cin >> carChoice;
-    cout << endl;
-
-    if(carChoice<1 || carChoice>4)
-    {
-        cout << "Please enter a valid number "<<endl;
-        return -1;
-    }
-    else
-        return carChoice;
+double* filterSortAsc(double* arr) {
+    mergeSortAsc(arr, 0, TOTAL_CARS - 1);
+    return arr;
 }
 
-// Function to display variety of suv cars to the user and return
-// the car which the user chooses.
-int suvCarSelection() {
-    int carChoice{};
-
-    cout << "Choose which car you would like to ride in" << endl;
-    cout << "1) Mahindra XUV 700" << endl;
-    cout << "2) Mahindra Scorpio S3" << endl;
-    cout << "3) Toyota Fortuner" << endl;
-    cout << "4) Kia Seltos FWD" << endl;
-    cin >> carChoice;
-    cout << endl;
-
-    if(carChoice<1 || carChoice>4)
-    {
-        cout << "Please enter a valid number "<<endl;
-        return -1;
-    }
-    else
-        return carChoice;
+double* filterSortDesc(double* arr) {
+    mergeSortDesc(arr, 0, TOTAL_CARS - 1);
+    return arr;
 }
 
-// Function to display variety of sedan cars to the user and return
-// the car which the user chooses.
-int sedanCarSelection() {
+Luxury& luxFilterPrice(double* arr, Luxury& car1, Luxury& car2, Luxury& car3, Luxury& car4) {
     int carChoice{};
+    Luxury invalid;
 
     cout << "Choose which car you would like to ride in" << endl;
-    cout << "1) Maruti Ciaz Alpha" << endl;
-    cout << "2) Maruti Ciaz Sigma" << endl;
-    cout << "3) Honda City V MT" << endl;
-    cout << "4) Hyundai Verna SX" << endl;
+    for (int i = 0; i < TOTAL_CARS; i++) {
+        if (arr[i] == car1.givePrice()) {
+            cout << i + 1 << ") " << car1.giveName() << endl;
+        }
+        else if (arr[i] == car2.givePrice()) {
+            cout << i + 1 << ") " << car2.giveName() << endl;
+        }
+        else if (arr[i] == car3.givePrice()) {
+            cout << i + 1 << ") " << car3.giveName() << endl;
+        }
+        else if (arr[i] == car4.givePrice()) {
+            cout << i + 1 << ") " << car4.giveName() << endl;
+        }
+    }
     cin >> carChoice;
     cout << endl;
 
     if(carChoice<1 || carChoice>4)
     {
         cout << "Please enter a valid number "<<endl;
-        return -1;
+        return invalid;
     }
     else
-        return carChoice;
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            if (arr[carChoice - 1] == car1.givePrice()) {
+                return car1;
+            }
+            else if (arr[carChoice - 1] == car2.givePrice()) {
+                return car2;
+            }
+            else if (arr[carChoice - 1] == car3.givePrice()) {
+                return car3;
+            }
+            else if (arr[carChoice - 1] == car4.givePrice()) {
+                return car4;
+            }
+        }
+}
+Luxury& luxFilterMileage(double* arr, Luxury& car1, Luxury& car2, Luxury& car3, Luxury& car4) {
+    int carChoice{};
+    Luxury invalid;
+
+    cout << "Choose which car you would like to ride in" << endl;
+    for (int i = 0; i < TOTAL_CARS; i++) {
+        if (arr[i] == car1.giveMileage()) {
+            cout << i + 1 << ") " << car1.giveName() << endl;
+        }
+        else if (arr[i] == car2.giveMileage()) {
+            cout << i + 1 << ") " << car2.giveName() << endl;
+        }
+        else if (arr[i] == car3.giveMileage()) {
+            cout << i + 1 << ") " << car3.giveName() << endl;
+        }
+        else if (arr[i] == car4.giveMileage()) {
+            cout << i + 1 << ") " << car4.giveName() << endl;
+        }
+    }
+    cin >> carChoice;
+    cout << endl;
+
+    if(carChoice<1 || carChoice>4)
+    {
+        cout << "Please enter a valid number "<<endl;
+        return invalid;
+    }
+    else
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            if (arr[carChoice - 1] == car1.giveMileage()) {
+                return car1;
+            }
+            else if (arr[carChoice - 1] == car2.giveMileage()) {
+                return car2;
+            }
+            else if (arr[carChoice - 1] == car3.giveMileage()) {
+                return car3;
+            }
+            else if (arr[carChoice - 1] == car4.giveMileage()) {
+                return car4;
+            }
+        }
+}
+
+Suv& suvFilterPrice(double* arr, Suv& car1, Suv& car2, Suv& car3, Suv& car4) {
+    int carChoice{};
+    Suv invalid;
+
+    cout << "Choose which car you would like to ride in" << endl;
+    for (int i = 0; i < TOTAL_CARS; i++) {
+        if (arr[i] == car1.givePrice()) {
+            cout << i + 1 << ") " << car1.giveName() << endl;
+        }
+        else if (arr[i] == car2.givePrice()) {
+            cout << i + 1 << ") " << car2.giveName() << endl;
+        }
+        else if (arr[i] == car3.givePrice()) {
+            cout << i + 1 << ") " << car3.giveName() << endl;
+        }
+        else if (arr[i] == car4.givePrice()) {
+            cout << i + 1 << ") " << car4.giveName() << endl;
+        }
+    }
+    cin >> carChoice;
+    cout << endl;
+
+    if(carChoice<1 || carChoice>4)
+    {
+        cout << "Please enter a valid number "<<endl;
+        return invalid;
+    }
+    else
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            if (arr[carChoice - 1] == car1.givePrice()) {
+                return car1;
+            }
+            else if (arr[carChoice - 1] == car2.givePrice()) {
+                return car2;
+            }
+            else if (arr[carChoice - 1] == car3.givePrice()) {
+                return car3;
+            }
+            else if (arr[carChoice - 1] == car4.givePrice()) {
+                return car4;
+            }
+        }
+}
+Suv& suvFilterMileage(double* arr, Suv& car1, Suv& car2, Suv& car3, Suv& car4) {
+    int carChoice{};
+    Suv invalid;
+
+    cout << "Choose which car you would like to ride in" << endl;
+    for (int i = 0; i < TOTAL_CARS; i++) {
+        if (arr[i] == car1.giveMileage()) {
+            cout << i + 1 << ") " << car1.giveName() << endl;
+        }
+        else if (arr[i] == car2.giveMileage()) {
+            cout << i + 1 << ") " << car2.giveName() << endl;
+        }
+        else if (arr[i] == car3.giveMileage()) {
+            cout << i + 1 << ") " << car3.giveName() << endl;
+        }
+        else if (arr[i] == car4.giveMileage()) {
+            cout << i + 1 << ") " << car4.giveName() << endl;
+        }
+    }
+    cin >> carChoice;
+    cout << endl;
+
+    if(carChoice<1 || carChoice>4)
+    {
+        cout << "Please enter a valid number "<<endl;
+        return invalid;
+    }
+    else
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            if (arr[carChoice - 1] == car1.giveMileage()) {
+                return car1;
+            }
+            else if (arr[carChoice - 1] == car2.giveMileage()) {
+                return car2;
+            }
+            else if (arr[carChoice - 1] == car3.giveMileage()) {
+                return car3;
+            }
+            else if (arr[carChoice - 1] == car4.giveMileage()) {
+                return car4;
+            }
+        }
+}
+
+Sedan& sedanFilterPrice(double* arr, Sedan& car1, Sedan& car2, Sedan& car3, Sedan& car4) {
+    int carChoice{};
+    Sedan invalid;
+
+    cout << "Choose which car you would like to ride in" << endl;
+    for (int i = 0; i < TOTAL_CARS; i++) {
+        if (arr[i] == car1.givePrice()) {
+            cout << i + 1 << ") " << car1.giveName() << endl;
+        }
+        else if (arr[i] == car2.givePrice()) {
+            cout << i + 1 << ") " << car2.giveName() << endl;
+        }
+        else if (arr[i] == car3.givePrice()) {
+            cout << i + 1 << ") " << car3.giveName() << endl;
+        }
+        else if (arr[i] == car4.givePrice()) {
+            cout << i + 1 << ") " << car4.giveName() << endl;
+        }
+    }
+    cin >> carChoice;
+    cout << endl;
+
+    if(carChoice<1 || carChoice>4)
+    {
+        cout << "Please enter a valid number "<<endl;
+        return invalid;
+    }
+    else
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            if (arr[carChoice - 1] == car1.givePrice()) {
+                return car1;
+            }
+            else if (arr[carChoice - 1] == car2.givePrice()) {
+                return car2;
+            }
+            else if (arr[carChoice - 1] == car3.givePrice()) {
+                return car3;
+            }
+            else if (arr[carChoice - 1] == car4.givePrice()) {
+                return car4;
+            }
+        }
+}
+Sedan& sedanFilterMileage(double* arr, Sedan& car1, Sedan& car2, Sedan& car3, Sedan& car4) {
+    int carChoice{};
+    Sedan invalid;
+
+    cout << "Choose which car you would like to ride in" << endl;
+    for (int i = 0; i < TOTAL_CARS; i++) {
+        if (arr[i] == car1.giveMileage()) {
+            cout << i + 1 << ") " << car1.giveName() << endl;
+        }
+        else if (arr[i] == car2.giveMileage()) {
+            cout << i + 1 << ") " << car2.giveName() << endl;
+        }
+        else if (arr[i] == car3.giveMileage()) {
+            cout << i + 1 << ") " << car3.giveName() << endl;
+        }
+        else if (arr[i] == car4.giveMileage()) {
+            cout << i + 1 << ") " << car4.giveName() << endl;
+        }
+    }
+    cin >> carChoice;
+    cout << endl;
+
+    if(carChoice<1 || carChoice>4)
+    {
+        cout << "Please enter a valid number "<<endl;
+        return invalid;
+    }
+    else
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            if (arr[carChoice - 1] == car1.giveMileage()) {
+                return car1;
+            }
+            else if (arr[carChoice - 1] == car2.giveMileage()) {
+                return car2;
+            }
+            else if (arr[carChoice - 1] == car3.giveMileage()) {
+                return car3;
+            }
+            else if (arr[carChoice - 1] == car4.giveMileage()) {
+                return car4;
+            }
+        }
 }
 
 int main() {
 
-    int chosenCar{};
+    // int chosenCar{};
     string userName;
     long long int userNumber;
+    double* carPrice = new double[TOTAL_CARS];
+    double* carMileage = new double[TOTAL_CARS];
 
     /*
      * Object initialization start
@@ -317,6 +691,8 @@ int main() {
                 2022, "Audi A8L Technology Model", 120, 15000,
                 true, true, true, 2);
 
+    Luxury luxFinalCar;
+
     Suv xuv700(200, 16, 60, "Diesel", 2022, "Mahindra XUV 700",
             100, 3000, 200, true, 840);
 
@@ -332,6 +708,8 @@ int main() {
                 "Kia Seltos FWD", 100, 2500, 190, false,
                 800);
 
+    Suv suvFinalCar;
+
     Sedan ciazA(185, 20, 43, "Petrol", 2021, "Maruti Ciaz Alpha",
             100, 2400, 510, 900);
 
@@ -343,6 +721,8 @@ int main() {
 
     Sedan verna(200, 21.5, 45, "Petrol", 2022, "Hyundai Verna SX",
             100, 2500, 480, 860);
+    
+    Sedan sedanFinalCar;
 
 
     /*
@@ -380,9 +760,23 @@ int main() {
     system("cls"); // Windows command
     // system("clear"); // Linux command
 
+    cout << "Hello Customer! " << userName << endl;
+    cout << "Welcome to Car Rental System!" << endl << endl;
+
+    cout << "Please press '1' to book a car" << endl;
+    cout << "Please press '2' to exit" << endl;
+
+    int initialChoice;
+    cin >> initialChoice;
+
     cout << "Welcome to Car Rental System!" << endl << endl;
     cout << "Please enter your name: ";
-    cin >> userName;
+    cin.ignore();
+    fflush(stdin);
+    getline(cin, userName);
+    fflush(stdin);
+    // std::transform(input begin, input end, output begin, operation);
+    std::transform(userName.begin(), userName.end(), userName.begin(), ::tolower);
     fptr << "Name: " << userName;
     fptr << endl;    
     cout << "Please enter your number: ";
@@ -396,22 +790,12 @@ int main() {
     system("cls"); // Windows command
     // system("clear"); // Linux command
 
-    cout << "Dear " << userName << endl;
-
-    cout << "Please press '1' to book a car" << endl;
-    cout << "Please press '2' to exit" << endl;
-
-    int initialChoice;
-    cin >> initialChoice;
-
-    int val_from_wm;
-    int luxCarChoice{0}, suvCarChoice{0}, sedanCarChoice{0};
+    int val_from_wm{}, filterValue{};
 
     while(initialChoice==1)
     {
         switch(initialChoice)
         {
-
             case 1:
                 {
                     val_from_wm = welcomeMenu();
@@ -423,102 +807,113 @@ int main() {
 
                     if(val_from_wm == 1)
                     {
-                        luxCarChoice = luxCarSelection();
-                        while (luxCarChoice == -1) {
-                            luxCarChoice = luxCarSelection();
+                        cout << "1) Choose a car based on price" << endl;
+                        cout << "2) Choose a car based on mileage" << endl;
+                        cin >> filterValue;
+
+                        if (filterValue == 1) {
+                            carPrice[0] = bmwx1.givePrice();
+                            carPrice[1] = mercEClass.givePrice();
+                            carPrice[2] = mercSClass.givePrice();
+                            carPrice[3] = audiA8.givePrice();
+                            carPrice = filterSortAsc(carPrice);
+                            luxFinalCar = luxFilterPrice(carPrice, bmwx1, mercEClass, mercSClass, audiA8);
+                            while (luxFinalCar.giveName() == "") {
+                                luxFinalCar = luxFilterPrice(carPrice, bmwx1, mercEClass, mercSClass, audiA8);
+                            }
                         }
+                        else if (filterValue == 2) {
+                            carMileage[0] = bmwx1.giveMileage();
+                            carMileage[1] = mercEClass.giveMileage();
+                            carMileage[2] = mercSClass.giveMileage();
+                            carMileage[3] = audiA8.giveMileage();
+                            carMileage = filterSortDesc(carMileage);
+                            luxFinalCar = luxFilterMileage(carMileage, bmwx1, mercEClass, mercSClass, audiA8);
+                            while (luxFinalCar.giveName() == "") {
+                                luxFinalCar = luxFilterMileage(carMileage, bmwx1, mercEClass, mercSClass, audiA8);
+                            }
+                        }
+                        
                         break;
                     }
                     else if(val_from_wm == 2)
                     {
-                        suvCarChoice = suvCarSelection();
-                        while (suvCarChoice == -1) {
-                            suvCarChoice = suvCarSelection();
+                        cout << "1) Choose a car based on price" << endl;
+                        cout << "2) Choose a car based on mileage" << endl;
+                        cin >> filterValue;
+
+                        if (filterValue == 1) {
+                            carPrice[0] = xuv700.givePrice();
+                            carPrice[1] = scorpioS3.givePrice();
+                            carPrice[2] = fortuner.givePrice();
+                            carPrice[3] = seltos.givePrice();
+                            carPrice = filterSortAsc(carPrice);
+                            suvFinalCar = suvFilterPrice(carPrice, xuv700, scorpioS3, fortuner, seltos);
+                            while (suvFinalCar.giveName() == "") {
+                                suvFinalCar = suvFilterPrice(carPrice, xuv700, scorpioS3, fortuner, seltos);
+                            }
                         }
+                        else if (filterValue == 2) {
+                            carMileage[0] = bmwx1.giveMileage();
+                            carMileage[1] = mercEClass.giveMileage();
+                            carMileage[2] = mercSClass.giveMileage();
+                            carMileage[3] = audiA8.giveMileage();
+                            carMileage = filterSortDesc(carMileage);
+                            suvFinalCar = suvFilterMileage(carMileage, xuv700, scorpioS3, fortuner, seltos);
+                            while (suvFinalCar.giveName() == "") {
+                                suvFinalCar = suvFilterMileage(carMileage, xuv700, scorpioS3, fortuner, seltos);
+                            }
+                        }
+                        
                         break;
                     }
                     else if(val_from_wm == 3)
                     {
-                        sedanCarChoice = sedanCarSelection();
-                        while (sedanCarChoice == -1) {
-                            sedanCarChoice = sedanCarSelection();
+                        cout << "1) Choose a car based on price" << endl;
+                        cout << "2) Choose a car based on mileage" << endl;
+                        cin >> filterValue;
+
+                        if (filterValue == 1) {
+                            carPrice[0] = ciazA.givePrice();
+                            carPrice[1] = ciazS.givePrice();
+                            carPrice[2] = hondaCity.givePrice();
+                            carPrice[3] = verna.givePrice();
+                            carPrice = filterSortAsc(carPrice);
+                            sedanFinalCar = sedanFilterPrice(carPrice, ciazA, ciazS, hondaCity, verna);
+                            while (sedanFinalCar.giveName() == "") {
+                                sedanFinalCar = sedanFilterPrice(carPrice, ciazA, ciazS, hondaCity, verna);
+                            }
                         }
+                        else if (filterValue == 2) {
+                            carMileage[0] = ciazA.giveMileage();
+                            carMileage[1] = ciazS.giveMileage();
+                            carMileage[2] = hondaCity.giveMileage();
+                            carMileage[3] = verna.giveMileage();
+                            carMileage = filterSortDesc(carMileage);
+                            sedanFinalCar = sedanFilterMileage(carMileage, ciazA, ciazS, hondaCity, verna);
+                            while (sedanFinalCar.giveName() == "") {
+                                sedanFinalCar = sedanFilterMileage(carMileage, ciazA, ciazS, hondaCity, verna);
+                            }
+                        }
+                        
                         break;
                     }
                 }
-                
-                break;
         }
 
         // In-built function to clear terminal/console
         system("cls"); // Windows command
         // system("clear"); // Linux command
 
-        if (luxCarChoice) {
-            if (luxCarChoice == 1) {
-                bmwx1.displayInfoLux();
-                chosenCar=11;
-            }
-            else if (luxCarChoice == 2) {
-                mercEClass.displayInfoLux();
-                chosenCar=12;
-            }
-            else if (luxCarChoice == 3) {
-                mercSClass.displayInfoLux();
-                chosenCar=13;
-            }
-            else if (luxCarChoice == 4) {
-                audiA8.displayInfoLux();
-                chosenCar=14;
-            }
-        } 
+        int days{}, billPrice{};
 
-        if (suvCarChoice) {
-            if (suvCarChoice == 1) {
-                xuv700.displayInfoSuv();
-                chosenCar=21;
-            }
-            else if (suvCarChoice == 2) {
-                scorpioS3.displayInfoSuv();
-                chosenCar=22;
-            }
-            else if (suvCarChoice == 3) {
-                fortuner.displayInfoSuv();
-                chosenCar=23;
-            }
-            else if (suvCarChoice == 4) {
-                seltos.displayInfoSuv();
-                chosenCar=24;
-            }
-        } 
+        if (luxFinalCar.giveName() != "") {
+            luxFinalCar.displayInfoLux();
 
-        if (sedanCarChoice) {
-            if (sedanCarChoice == 1) {
-                ciazA.displayInfoSedan();
-                chosenCar=31;
-            }
-            else if (sedanCarChoice == 2) {
-                ciazS.displayInfoSedan();
-                chosenCar=32;
-            }
-            else if (sedanCarChoice == 3) {
-                hondaCity.displayInfoSedan();
-                chosenCar=33;
-            }
-            else if (sedanCarChoice == 4) {
-                verna.displayInfoSedan();
-                chosenCar=34;
-            }
-        } 
+            cout<<"How many days you would like to book the car for?"<<endl;
+            cin>>days;
 
-        int days{},billPrice{};
-        cout<<"How many days you would like to book the car for?"<<endl;
-        cin>>days;
-
-        switch(chosenCar)
-        {
-            case 11:
-            billPrice=bmwx1.giveCost(days);
+            billPrice=luxFinalCar.giveCost(days);
 
             fptr.open("customerInfo.txt", std::ios::app);
 
@@ -526,13 +921,16 @@ int main() {
                 cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
                 return 0;
             }
-            fptr << "Car booked: " << bmwx1.giveName() << endl;
+            fptr << "Car booked: " << luxFinalCar.giveName() << endl;
             fptr.close();
-            
-            break;
+        }
+        else if (suvFinalCar.giveName() != "") {
+            suvFinalCar.displayInfoSuv();
 
-            case 12:
-            billPrice=mercEClass.giveCost(days);
+            cout<<"How many days you would like to book the car for?"<<endl;
+            cin>>days;
+
+            billPrice=suvFinalCar.giveCost(days);
 
             fptr.open("customerInfo.txt", std::ios::app);
 
@@ -540,13 +938,16 @@ int main() {
                 cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
                 return 0;
             }
-            fptr << "Car booked: " << mercEClass.giveName() << endl;
+            fptr << "Car booked: " << suvFinalCar.giveName() << endl;
             fptr.close();
-            
-            break;
+        }
+        else if (sedanFinalCar.giveName() != "") {
+            sedanFinalCar.displayInfoSedan();
 
-            case 13:
-            billPrice=mercSClass.giveCost(days);
+            cout<<"How many days you would like to book the car for?"<<endl;
+            cin>>days;
+
+            billPrice=sedanFinalCar.giveCost(days);
 
             fptr.open("customerInfo.txt", std::ios::app);
 
@@ -554,137 +955,8 @@ int main() {
                 cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
                 return 0;
             }
-            fptr << "Car booked: " << mercSClass.giveName() << endl;
+            fptr << "Car booked: " << sedanFinalCar.giveName() << endl;
             fptr.close();
-            
-            break;
-
-            case 14:
-            billPrice=audiA8.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << audiA8.giveName() << endl;
-            fptr.close();
-
-            break;
-
-            case 21:
-            billPrice=xuv700.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << xuv700.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 22:
-            billPrice=scorpioS3.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << scorpioS3.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 23:
-            billPrice=fortuner.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << fortuner.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 24:
-            billPrice=seltos.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << seltos.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 31:
-            billPrice=ciazA.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << ciazA.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 32:
-            billPrice=ciazS.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << ciazS.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 33:
-            billPrice=hondaCity.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << hondaCity.giveName() << endl;
-            fptr.close();
-            
-            break;
-
-            case 34:
-            billPrice=verna.giveCost(days);
-
-            fptr.open("customerInfo.txt", std::ios::app);
-
-            if (!fptr) {
-                cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-                return 0;
-            }
-            fptr << "Car booked: " << verna.giveName() << endl;
-            fptr.close();
-            
-            break;
-
         }
 
         fptr.open("customerInfo.txt", std::ios::app);
@@ -713,7 +985,6 @@ int main() {
         fptr << "Bill: " << (billPrice * 0.18) + billPrice << endl << endl;
         fptr.close();
 
-
         /*
          * Functions for delay start
          */
@@ -731,23 +1002,32 @@ int main() {
         // system("clear"); // Linux command
 
 
-        // Open customerInfo.txt file in append mode
-        fptr.open("customerInfo.txt", std::ios::app);
+        cout << "Hello Customer! " << userName << endl;
+        cout << "Welcome to Car Rental System!" << endl << endl;
 
-        if (!fptr) {
-            cout << "Please create a customerInfo.txt file and re-run this program!" << endl;
-            return 0;
+        cout << "Please press '1' to book a car" << endl;
+        cout << "Please press '2' to exit" << endl;
+
+        int initialChoice;
+        cin >> initialChoice;
+
+        if (initialChoice != 1) {
+            break;
         }
 
         cout << "Welcome to Car Rental System!" << endl << endl;
         cout << "Please enter your name: ";
-        cin >> userName;
+        fflush(stdin);
+        getline(cin, userName);
+        fflush(stdin);
+        // std::transform(input begin, input end, output begin, operation);
+        std::transform(userName.begin(), userName.end(), userName.begin(), ::tolower);
         fptr << "Name: " << userName;
         fptr << endl;    
         cout << "Please enter your number: ";
         cin >> userNumber;
         fptr << "Number: " << userNumber;
-        fptr << endl;    
+        fptr << endl;
 
         fptr.close();
 
@@ -755,12 +1035,23 @@ int main() {
         system("cls"); // Windows command
         // system("clear"); // Linux command
 
-        cout << "Dear " << userName << endl;
+        // Resetting values
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            carPrice[i] = 0;
+        }
+        for (int i = 0; i < TOTAL_CARS; i++) {
+            carMileage[i] = 0;
+        }
 
-        cout << "Please press '1' to book a car" << endl;
-        cout << "Please press '2' to exit" << endl;
-        cin >> initialChoice;
+        days = 0;
+        billPrice = 0;
+        luxFinalCar = Luxury();
+        suvFinalCar = Suv();
+        sedanFinalCar = Sedan();
     }
+
     fptr.close();
+
+    cout << endl;
     return 0;
 }
