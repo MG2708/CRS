@@ -854,10 +854,10 @@ int main() {
                             }
                         }
                         else if (filterValue == 2) {
-                            carMileage[0] = bmwx1.giveMileage();
-                            carMileage[1] = mercEClass.giveMileage();
-                            carMileage[2] = mercSClass.giveMileage();
-                            carMileage[3] = audiA8.giveMileage();
+                            carMileage[0] = xuv700.giveMileage();
+                            carMileage[1] = scorpioS3.giveMileage();
+                            carMileage[2] = fortuner.giveMileage();
+                            carMileage[3] = seltos.giveMileage();
                             carMileage = filterSortDesc(carMileage);
                             suvFinalCar = suvFilterMileage(carMileage, xuv700, scorpioS3, fortuner, seltos);
                             while (suvFinalCar.giveName() == "") {
