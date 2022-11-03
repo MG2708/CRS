@@ -905,7 +905,7 @@ int main() {
         system("cls"); // Windows command
         // system("clear"); // Linux command
 
-        int days{}, billPrice{};
+        double days{}, billPrice{};
 
         if (luxFinalCar.giveName() != "") {
             luxFinalCar.displayInfoLux();
