@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <vector>
 #include <climits>
 #include <cstdlib>
 #include <iomanip>
